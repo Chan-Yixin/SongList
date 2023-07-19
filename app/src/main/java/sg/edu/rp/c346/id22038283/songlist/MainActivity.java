@@ -1,7 +1,5 @@
 package sg.edu.rp.c346.id22038283.songlist;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,87 +7,76 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
-
-    EditText title;
-    EditText singers;
-    EditText year;
-
-    RadioGroup stars;
-    Button insert;
-    Button Show;
-
-
-
-
+    EditText etSong,etSinger,etYear;
+    Button btnInsert,btnList;
+    RadioGroup rg;
+    ArrayList<String> al = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        title = findViewById(R.id.Title);
-        singers = findViewById(R.id.Singers);
-        year = findViewById(R.id.Year);
-        insert = findViewById(R.id.update);
-        Show = findViewById(R.id.Delete);
-        stars = findViewById(R.id.radioStars);
+        etSinger = findViewById(R.id.etSinger);
+        etSong = findViewById(R.id.etSong);
+        etYear = findViewById(R.id.etYear);
+        btnInsert = findViewById(R.id.btnInsert);
+        btnList = findViewById(R.id.btnList);
+        rg = findViewById(R.id.rg);
 
 
+        etSinger.setText("");
+        etSong.setText("");
+        etYear.setText("");
+        rg.clearCheck();
 
-
-        insert.setOnClickListener(new View.OnClickListener() {
+        btnInsert.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-
+            public void onClick(View v) {
+                int radioID = rg.getCheckedRadioButtonId();
+                int rating = 0;
+                if (radioID == R.id.radioButton1){
+                    rating = 1;
+                } else if (radioID == R.id.radioButton2){
+                    rating = 2;
+                } else if (radioID == R.id.radioButton3) {
+                    rating = 3;
+                } else if (radioID == R.id.radioButton4) {
+                    rating = 4;
+                } else if (radioID == R.id.radioButton5) {
+                    rating = 5;
+                }
 
                 DBHelper db = new DBHelper(MainActivity.this);
 
-                String songTitle = title.getText().toString();
-                String songSingers = singers.getText().toString();
-                int songYear = Integer.parseInt(year.getText().toString());
-                int songRating = 0;
+                db.insertSong(etSong.getText().toString(), etSinger.getText().toString(),
+                        etYear.getText().toString(), rating);
 
-                int rating = stars.getCheckedRadioButtonId();
-
-                if (rating == R.id.Star1){
-                    songRating = 1;
-                } else if (rating == R.id.Star2) {
-                    songRating = 2;
-                } else if (rating == R.id.Star3) {
-                    songRating = 3;
-                } else if (rating == R.id.Star4) {
-                    songRating = 4;
-                } else {
-                    songRating = 5;
-                }
-
-
-
-                // Insert a task
-                db.insertSong(songTitle,songSingers,songYear,songRating);
+                etSinger.setText("");
+                etSong.setText("");
+                etYear.setText("");
+                rg.setId(-1);
 
             }
+
         });
 
-        Show.setOnClickListener(new View.OnClickListener() {
+        btnList.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-
-
-
-                Intent intent = new Intent(MainActivity.this,SecondActivity.class);
-                startActivity(intent);
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this,
+                        SecondActivity.class);
+                startActivity(i);
             }
         });
-
-
 
 
 
 
     }
-
-
-
 }

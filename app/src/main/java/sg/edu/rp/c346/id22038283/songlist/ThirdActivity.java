@@ -1,108 +1,108 @@
 package sg.edu.rp.c346.id22038283.songlist;
 
-import static java.lang.Integer.parseInt;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import org.w3c.dom.Text;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ThirdActivity extends AppCompatActivity {
-
-
-    EditText title;
-    EditText singers;
-    EditText year;
-
-    RadioGroup stars;
-    Button Update;
-    Button Delete;
-    Button Cancel;
+    EditText etSong,etSinger,etYear;
+    Button btnUpdate,btnDelete,btnBack;
+    RadioGroup rg;
+    RadioButton r1,r2,r3,r4,r5;
     Song data;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_third);
-        title = findViewById(R.id.Title);
-        singers = findViewById(R.id.Singers);
-        year = findViewById(R.id.Year);
-        Update = findViewById(R.id.update);
-        Delete = findViewById(R.id.Delete);
-        stars = findViewById(R.id.radioStars);
-        Cancel = findViewById(R.id.Cancel);
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_third);
+        etSinger = findViewById(R.id.etSinger);
+        etSong = findViewById(R.id.etSong);
+        etYear = findViewById(R.id.etYear);
+        btnUpdate = findViewById(R.id.btnUpdate);
+        btnDelete = findViewById(R.id.btnDelete);
+        btnBack = findViewById(R.id.btnBack);
 
+        r1 = findViewById(R.id.radioButton1);
+        r2 = findViewById(R.id.radioButton2);
+        r3 = findViewById(R.id.radioButton3);
+        r4 = findViewById(R.id.radioButton4);
+        r5 = findViewById(R.id.radioButton5);
+        rg = findViewById(R.id.rg);
 
-        Intent i = getIntent();
-        data = (Song) i.getSerializableExtra("data");
+        Intent intent = getIntent();
+        data = (Song) intent.getSerializableExtra("data");
 
+        etSinger.setText(data.getSinger());
+        etSong.setText(data.getSong());
+        etYear.setText(data.getYear());
+        if (data.getRating() == 1) {
+            r1.setChecked(true);
+        } else if (data.getRating() == 2) {
+            r2.setChecked(true);
+        } else if (data.getRating() == 3) {
+            r3.setChecked(true);
+        } else if (data.getRating() == 4) {
+            r4.setChecked(true);
+        } else if (data.getRating() == 5) {
+            r5.setChecked(true);
+        }
 
-
-        title.setText(data.getTitle());
-        singers.setText(data.getSingers());
-        year.setText(String.valueOf(data.getYear()));
-        stars.check((data.getStar()));
-
-
-
-
-
-        Update.setOnClickListener(new View.OnClickListener() {
+        btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                DBHelper dbh = new DBHelper(ThirdActivity.this);
-                data.setTitle(title.getText().toString());
-                data.setSingers(singers.getText().toString());
-                data.setYear(Integer.parseInt(year.getText().toString()));
-                int songRating = 0;
-
-                int rating = stars.getCheckedRadioButtonId();
-                if (rating == R.id.Star1){
-                    songRating = 1;
-                } else if (rating == R.id.Star2) {
-                    songRating = 2;
-                } else if (rating == R.id.Star3) {
-                    songRating = 3;
-                } else if (rating == R.id.Star4) {
-                    songRating = 4;
-                } else {
-                    songRating = 5;
-                }
-
-
-                data.setStars(songRating);
-
-                dbh.updateSong(data);
-                dbh.close();
-
-                Intent intent = new Intent(ThirdActivity.this, SecondActivity.class);
-                startActivity(intent);
+            public void onClick(View v) {
+                Intent back = new Intent(ThirdActivity.this,
+                        SecondActivity.class);
+                startActivity(back);
             }
         });
 
-        Delete.setOnClickListener(new View.OnClickListener() {
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DBHelper db = new DBHelper(ThirdActivity.this);
+                int selectedRgStar = rg.getCheckedRadioButtonId();
+                int rating = 0;
+                if (selectedRgStar == R.id.radioButton1) {
+                    rating = 1;
+                } else if (selectedRgStar == R.id.radioButton2) {
+                    rating = 2;
+                } else if (selectedRgStar == R.id.radioButton3) {
+                    rating = 3;
+                } else if (selectedRgStar == R.id.radioButton4) {
+                    rating = 4;
+                } else if (selectedRgStar == R.id.radioButton5) {
+                    rating = 5;
+                }
+
+                String song = etSong.getText().toString();
+                String singer = etSinger.getText().toString();
+                String year = etYear.getText().toString();
+                data.setSongContent(song,singer,year, rating);
+                db.updateSong(data);
+                db.close();
+                Intent i = new Intent(ThirdActivity.this,
+                        SecondActivity.class);
+                startActivity(i);
+            }
+        });
+
+        btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DBHelper dbh = new DBHelper(ThirdActivity.this);
-                dbh.deleteSong(data.get_id());
-                Intent intent = new Intent(ThirdActivity.this, SecondActivity.class);
-                startActivity(intent);
-            }
-        });
-        Cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ThirdActivity.this, SecondActivity.class);
-                startActivity(intent);
-            }
-        });
+                dbh.deleteSong(data.getId());
+                Intent i = new Intent(ThirdActivity.this,
+                        SecondActivity.class);
+                startActivity(i);
 
+            }
+        });
 
     }
 }

@@ -5,64 +5,43 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class Song implements Serializable {
-    private int _id;
-    private String title;
-    private  String singers;
-    private int year;
-    private  int stars;
+    private int id;
+    private String song;
+    private String singer;
+    private String year;
+    private int rating;
 
-
-    public Song(int id, String title, String singers, int year, int stars){
-        this._id = id;
-        this.title = title.toString();
-        this.singers = singers.toString();
+    public Song(int id, String song, String singer, String year, int rating) {
+        this.id = id;
+        this.song = song;
+        this.singer = singer;
         this.year = year;
-        this.stars = stars;
-
+        this.rating = rating;
     }
 
-    public int get_id() {
-        return _id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-    public String getSingers() {
-        return singers;
-    }
-
-    public int getYear() {
-        return year;
-    }
-
-    public int getStar() {
-        return stars;
-    }
-
+    public int getId() { return id; }
+    public String getSong() { return song; }
+    public String getSinger() { return singer; }
+    public String getYear() { return year; }
+    public int getRating() { return rating; }
+    public String getStar(){
+        String star = "⭐".repeat(rating);
+        return star; }
 
     @NonNull
     @Override
     public String toString() {
-        String starsString = "";
-        for (int i = 0; i < stars; i++) {
-            starsString += "*";
-        }
-        return title + "\n" + singers + "\n" + year + "\n" + starsString;
+        String star = "⭐".repeat(rating);
+        String output = String.format("%s\n%s - %s\n" +star, song, singer, year );
+        return output;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public void setYear(int year) {
+    public void setSongContent(String song, String singer, String year, int rating) {
+        this.song = song;
+        this.singer = singer;
         this.year = year;
-    }
-    public void setSingers(String singers) {
-        this.singers = singers;
+        this.rating = rating;
     }
 
-    public void setStars(int stars) {
-        this.stars = stars;
-    }
 }
 

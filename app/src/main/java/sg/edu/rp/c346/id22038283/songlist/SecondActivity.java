@@ -1,98 +1,81 @@
 package sg.edu.rp.c346.id22038283.songlist;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SecondActivity extends AppCompatActivity {
+
+    Button btn5star,btnBack;
     ListView lv;
-    ArrayList<Song> alSong;
-    Button star5;
-
-    ArrayAdapter aaSong;
-
+    Spinner spn;
+    //ArrayAdapter aaSongs;
+    CustomAdapter aaSongs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-
-        alSong = new ArrayList<Song>();
-
-
+        btn5star = findViewById(R.id.btn5star);
+        btnBack = findViewById(R.id.btnBack);
         lv = findViewById(R.id.lv);
-
-        star5 = findViewById(R.id.btn5Star);
-
-
-        ArrayAdapter adapter = new ArrayAdapter<>(SecondActivity.this, android.R.layout.simple_list_item_1, alSong);
-
-
-        lv.setAdapter(adapter);
+        spn = findViewById(R.id.spinner);
 
         DBHelper db = new DBHelper(SecondActivity.this);
-        alSong.clear();
-        alSong.addAll(db.getSong());
-        adapter.notifyDataSetChanged();
+        ArrayList<Song> songs = db.getSongs();
+        db.close();
+        aaSongs = new CustomAdapter(this, R.layout.row, songs);
+        lv.setAdapter(aaSongs);
 
+        String txt = "";
 
-        ArrayList<String> data = db.getSongContent();
+        for (int i = 0; i > songs.size(); i++) {
+            txt += songs.get(i);
+            aaSongs.add(txt);
+            txt = "";
+            aaSongs.notifyDataSetChanged();
+        }
+            btn5star.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ArrayList<Song> filteredSongs = db.getFilteredSongs();
+                    aaSongs.clear();
+                    aaSongs.addAll(filteredSongs);
+                    aaSongs.notifyDataSetChanged();
 
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Song data = alSong.get(position);
-
-
-                // Create an Intent to launch the third activity
-                Intent intent = new Intent(SecondActivity.this, ThirdActivity.class);
-                intent.putExtra("data", data);
-                startActivity(intent);
-
-            }
-        });
-        star5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DBHelper db = new DBHelper(SecondActivity.this);
-
-                ArrayList<Song> fiveStarSongs = new ArrayList<>();
-
-                for (Song song : alSong) {
-                    if (song.getStar() == 5) {
-                        fiveStarSongs.add(song);
-                    }
-
-                    ArrayAdapter<Song> adapter = new ArrayAdapter<>(SecondActivity.this, android.R.layout.simple_list_item_1, fiveStarSongs);
-                    lv.setAdapter(adapter);
                 }
+            });
 
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int
+                        position, long identity) {
+                    Song data = songs.get(position);
+                    Intent intent = new Intent(SecondActivity.this,
+                            ThirdActivity.class);
+                    intent.putExtra("data", data);
+                    startActivity(intent);
+                }
+            });
 
+            btnBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(SecondActivity.this,
+                            MainActivity.class);
+                    startActivity(i);
+                }
+            });
 
-            }
-        });
-
-
-
-
-
-
-
-
-
+        }
     }
 
-
-
-
-}
